@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion Supermarché</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>🛒 Supermarché — Gestion des Caisses</h1>
+</header>
+
+<section id="controles">
+  <div class="control-group">
+    <input type="text"   id="nomClient"    placeholder="Nom du client">
+    <input type="number" id="nbArticles"   placeholder="Nb articles" min="1">
+    <button onclick="ajouterClient()">➕ Ajouter un client</button>
+  </div>
+  <div class="control-group">
+    <input type="number" id="numeroCaisse" placeholder="Numéro caisse">
+    <button onclick="servirClient()">✅ Servir prochain client</button>
+    <button onclick="ouvrirCaisse()">🟢 Ouvrir caisse</button>
+    <button onclick="fermerCaisse()">🔴 Fermer caisse</button>
+  </div>
+</section>
+
+<section id="grille-caisses"></section>
+
+<section id="statistiques">
+  Total clients servis : <span id="totalServis">0</span>
+</section>
+
+<div id="message"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

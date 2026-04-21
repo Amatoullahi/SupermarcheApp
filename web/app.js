@@ -1,0 +1,122 @@
+const API = 'http://127.0.0.1:8080/api';
+
+// Affiche un message temporaire en bas à droite
+function afficherMessage(texte, type) {
+  const msg = document.getElementById('message');
+  msg.textContent = texte;
+  msg.className = type;
+  msg.style.display = 'block';
+  setTimeout(() => msg.style.display = 'none', 3000);
+}
+
+// Interroge le serveur et met à jour l'affichage
+async function rafraichir() {
+  try {
+    const res  = await fetch(`${API}/etat`);
+    const data = await res.json();
+    afficherCaisses(data.caisses);
+    document.getElementById('totalServis').textContent = data.totalServis;
+  } catch (e) {
+    console.error('Serveur inaccessible', e);
+  }
+}
+
+// Génère les cartes HTML
+function afficherCaisses(caisses) {
+  const grille = document.getElementById('grille-caisses');
+  grille.innerHTML = '';
+  caisses.forEach(c => {
+    const carte = document.createElement('div');
+    carte.className = 'carte-caisse'
+      + (c.express ? ' express' : '')
+      + (c.ouverte ? '' : ' fermee');
+
+    carte.innerHTML = `
+      <h3>Caisse ${c.numero}
+        ${c.express ? '<span class="badge-express">EXPRESS</span>' : ''}
+      </h3>
+      <p>👥 Clients en attente : <strong>${c.nbClients}</strong></p>
+      <p>⏱️ Temps d'attente : ~${c.tempsAttente}s</p>
+      <p>${c.ouverte ? '🟢 Ouverte' : '🔴 Fermée'}</p>
+    `;
+    grille.appendChild(carte);
+  });
+}
+
+// Ajouter un client
+async function ajouterClient() {
+  const nom = document.getElementById('nomClient').value.trim();
+  const nb  = parseInt(document.getElementById('nbArticles').value);
+  if (!nom || isNaN(nb) || nb < 1) {
+    afficherMessage('Remplis le nom et le nombre d\'articles !', 'erreur');
+    return;
+  }
+  try {
+    const res = await fetch(`${API}/client/ajouter`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nom, nbArticles: nb })
+    });
+    const data = await res.json();
+    if (data.erreur) { afficherMessage(data.erreur, 'erreur'); return; }
+    afficherMessage(`${nom} ajouté !`, 'succes');
+    document.getElementById('nomClient').value   = '';
+    document.getElementById('nbArticles').value  = '';
+    rafraichir();
+  } catch (e) { afficherMessage('Erreur serveur', 'erreur'); }
+}
+
+// Servir un client
+async function servirClient() {
+  const numero = parseInt(document.getElementById('numeroCaisse').value);
+  if (isNaN(numero)) { afficherMessage('Indique un numéro de caisse !', 'erreur'); return; }
+  try {
+    const res  = await fetch(`${API}/caisse/servir`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ numero })
+    });
+    const data = await res.json();
+    if (data.erreur) { afficherMessage(data.erreur, 'erreur'); return; }
+    afficherMessage(`Client servi à la caisse ${numero} !`, 'succes');
+    rafraichir();
+  } catch (e) { afficherMessage('Erreur serveur', 'erreur'); }
+}
+
+// Ouvrir une caisse
+async function ouvrirCaisse() {
+  const numero = parseInt(document.getElementById('numeroCaisse').value);
+  if (isNaN(numero)) { afficherMessage('Indique un numéro de caisse !', 'erreur'); return; }
+  try {
+    const res  = await fetch(`${API}/caisse/ouvrir`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ numero })
+    });
+    const data = await res.json();
+    if (data.erreur) { afficherMessage(data.erreur, 'erreur'); return; }
+    afficherMessage(`Caisse ${numero} ouverte !`, 'succes');
+    rafraichir();
+  } catch (e) { afficherMessage('Erreur serveur', 'erreur'); }
+}
+
+// Fermer une caisse
+async function fermerCaisse() {
+  const numero = parseInt(document.getElementById('numeroCaisse').value);
+  if (isNaN(numero)) { afficherMessage('Indique un numéro de caisse !', 'erreur'); return; }
+  try {
+    const res  = await fetch(`${API}/caisse/fermer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ numero })
+    });
+    const data = await res.json();
+    if (data.erreur) { afficherMessage(data.erreur, 'erreur'); return; }
+    afficherMessage(`Caisse ${numero} fermée !`, 'succes');
+    rafraichir();
+  } catch (e) { afficherMessage('Erreur serveur', 'erreur'); }
+}
+
+// Rafraîchissement automatique toutes les 3 secondes
+setInterval(rafraichir, 3000);
+rafraichir();
