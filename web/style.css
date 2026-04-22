@@ -106,3 +106,14 @@ button:hover { background: #2a5298; }
 
 #message.succes { background: #2ecc71; color: white; }
 #message.erreur { background: #e74c3c; color: white; }
+/* Bonus alerte : file > 5 clients */
+.carte-caisse.alerte {
+    border: 2px solid #e74c3c;
+    background: #fff5f5;
+    animation: clignoter 1s ease-in-out infinite;
+}
+
+@keyframes clignoter {
+    0%,  100% { opacity: 1;   }
+    50%        { opacity: 0.5; }
+}

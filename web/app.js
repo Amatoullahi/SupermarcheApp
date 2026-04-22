@@ -27,9 +27,10 @@ function afficherCaisses(caisses) {
   grille.innerHTML = '';
   caisses.forEach(c => {
     const carte = document.createElement('div');
-    carte.className = 'carte-caisse'
-      + (c.express ? ' express' : '')
-      + (c.ouverte ? '' : ' fermee');
+    carte.className = 'carte-caisse' +
+      (c.express   ? ' express' : '') +
+      (!c.ouverte  ? ' fermee'  : '') +
+      (c.nbClients > 5 ? ' alerte' : '');
 
     carte.innerHTML = `
       <h3>Caisse ${c.numero}
