@@ -1,5 +1,34 @@
 const API = 'http://127.0.0.1:8080/api';
+// Initialisation du graphique (une seule fois au chargement)
+const ctx = document.getElementById('monGraphique').getContext('2d');
+const monChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Clients en attente',
+            data: [],
+            backgroundColor: [],
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+});
 
+// Fonction de mise à jour du graphique
+function mettreAJourGraphique(caisses) {
+    monChart.data.labels = caisses.map(c =>
+        'Caisse ' + c.numero + (c.express ? ' ⚡' : '')
+    );
+    monChart.data.datasets[0].data = caisses.map(c => c.nbClients);
+    monChart.data.datasets[0].backgroundColor = caisses.map(c =>
+        c.nbClients > 5 ? '#e74c3c' :
+        c.express       ? '#f5a623' : '#1A3A6B'
+    );
+    monChart.update();
+}
 // Affiche un message temporaire en bas à droite
 function afficherMessage(texte, type) {
   const msg = document.getElementById('message');
@@ -16,6 +45,7 @@ async function rafraichir() {
     const data = await res.json();
     afficherCaisses(data.caisses);
     document.getElementById('totalServis').textContent = data.totalServis;
+    mettreAJourGraphique(data.caisses);
   } catch (e) {
     console.error('Serveur inaccessible', e);
   }

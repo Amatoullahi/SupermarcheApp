@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Gestion Supermarché</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -34,7 +35,10 @@
 <section id="statistiques">
   Total clients servis : <span id="totalServis">0</span>
 </section>
-
+<section id="graphique">
+    <h2>Charge par caisse</h2>
+    <canvas id="monGraphique" height="120"></canvas>
+</section>
 <div id="message"></div>
 
 <script src="app.js"></script>

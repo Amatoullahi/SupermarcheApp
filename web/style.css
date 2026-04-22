@@ -117,3 +117,14 @@ button:hover { background: #2a5298; }
     0%,  100% { opacity: 1;   }
     50%        { opacity: 0.5; }
 }
+#graphique {
+    padding: 12px 24px;
+    background: #fff;
+    margin: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+#monGraphique {
+    max-height: 250px;
+}
