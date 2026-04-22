@@ -4,7 +4,7 @@
 
 int main() {
     Supermarche sm;
-    sm.initialiser(3); // 3 caisses ordinaires + 1 express
+    sm.initialiser(4); // 3 caisses ordinaires + 1 express
 
     Serveur srv;
     srv.demarrer(sm);
