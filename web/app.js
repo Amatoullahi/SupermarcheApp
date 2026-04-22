@@ -117,6 +117,21 @@ async function fermerCaisse() {
   } catch (e) { afficherMessage('Erreur serveur', 'erreur'); }
 }
 
+async function rafraichirHistorique() {
+    const res = await fetch('http://localhost:8080/api/historique');
+    const data = await res.json();
+    const liste = document.getElementById('liste-historique');
+    liste.innerHTML = '';
+    [...data].reverse().forEach(e => {
+        const li = document.createElement('li');
+        li.textContent = `[${e.heure}] ${e.nom} — ${e.articles} articles → Caisse ${e.caisse}`;
+        liste.appendChild(li);
+    });
+}
+
+setInterval(rafraichirHistorique, 3000);
+rafraichirHistorique();
+
 // Rafraîchissement automatique toutes les 3 secondes
 setInterval(rafraichir, 3000);
 rafraichir();

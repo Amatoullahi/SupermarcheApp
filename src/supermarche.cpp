@@ -56,8 +56,17 @@ void Supermarche::ajouterClient(const std::string& nom, int nbArticles) {
 void Supermarche::servirClient(int numeroCaisse) {
     for (auto& caisse : caisses) {
         if (caisse.getNumero() == numeroCaisse) {
-            caisse.servirClient();
+            Client cl = caisse.servirClient(); // ← récupère le client avant de le perdre
             totalServis++;
+
+            // Enregistrement dans l'historique
+            EntreeHistorique entry;
+            entry.nomClient    = cl.getNom();
+            entry.nbArticles   = cl.getNbArticles();
+            entry.numeroCaisse = numeroCaisse;
+            entry.heureService = std::time(nullptr);
+            historique.push_back(entry);
+
             return;
         }
     }
@@ -66,6 +75,10 @@ void Supermarche::servirClient(int numeroCaisse) {
 
 std::vector<Caisse>& Supermarche::getCaisses() {
     return caisses;
+}
+
+std::vector<EntreeHistorique> Supermarche::getHistorique() const {
+    return historique;
 }
 
 int Supermarche::getTotalClientsServis() const {

@@ -72,7 +72,20 @@ button:hover { background: #2a5298; }
   border-radius: 12px;
   margin-left: 6px;
 }
-
+#historique {
+    padding: 12px 24px;
+    background: #fff;
+    margin: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+#historique h2 { margin-bottom: 8px; color: #1A3A6B; }
+#liste-historique { list-style: none; padding: 0; font-size: 0.9rem; }
+#liste-historique li {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+    color: #444;
+}
 #statistiques {
   background: #1A3A6B;
   color: white;
