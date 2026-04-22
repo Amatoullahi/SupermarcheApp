@@ -128,3 +128,43 @@ button:hover { background: #2a5298; }
 #monGraphique {
     max-height: 250px;
 }
+#zone-simulation {
+    background: #fff;
+    margin: 16px 24px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#zone-simulation h3 {
+    margin: 0;
+    color: #1A3A6B;
+    font-size: 1rem;
+}
+
+#btnDemarrer {
+    background: #16a085;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#btnArreter {
+    background: #c0392b;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    display: none; /* caché par défaut */
+}
+
+#btnDemarrer:hover { background: #1abc9c; }
+#btnArreter:hover  { background: #e74c3c; }

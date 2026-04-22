@@ -18,6 +18,16 @@
     <input type="number" id="nbArticles"   placeholder="Nb articles" min="1">
     <button onclick="ajouterClient()">➕ Ajouter un client</button>
   </div>
+  <!-- Zone simulation — séparée des controles -->
+  <div id="zone-simulation">
+    <h3>Mode Simulation</h3>
+    <button onclick="demarrerSimulation()" id="btnDemarrer">
+        ▶️ Démarrer simulation
+    </button>
+    <button onclick="arreterSimulation()" id="btnArreter">
+        ⏹️ Arrêter simulation
+    </button>
+  </div>
   <div class="control-group">
     <input type="number" id="numeroCaisse" placeholder="Numéro caisse">
     <button onclick="servirClient()">✅ Servir prochain client</button>

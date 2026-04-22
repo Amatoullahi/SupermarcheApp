@@ -188,3 +188,51 @@ rafraichirHistorique();
 // Rafraîchissement automatique toutes les 3 secondes
 setInterval(rafraichir, 3000);
 rafraichir();
+
+// ---- Mode simulation ----
+let intervalSimulation = null;
+
+const prenomsAleatoires = [
+    'Awa', 'Fatou', 'Moussa', 'Ibrahima', 'Mariama',
+    'Cheikh', 'Aissatou', 'Oumar', 'Rokhaya', 'Lamine',
+    'Ndéye', 'Mamadou', 'Coumba', 'Serigne', 'Astou'
+];
+
+function nomAleatoire() {
+    return prenomsAleatoires[Math.floor(Math.random() * prenomsAleatoires.length)];
+}
+
+function nbArticlesAleatoire() {
+    return Math.floor(Math.random() * 30) + 1; // entre 1 et 30
+}
+
+async function ajouterClientSimulation() {
+    const nom = nomAleatoire();
+    const nb  = nbArticlesAleatoire();
+    try {
+        await fetch(`${API}/client/ajouter`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, nbArticles: nb })
+        });
+        rafraichir();
+    } catch (e) {
+        console.error('Erreur simulation', e);
+    }
+}
+
+function demarrerSimulation() {
+    if (intervalSimulation) return;
+    intervalSimulation = setInterval(ajouterClientSimulation, 2000); // 1 client toutes les 2s
+    document.getElementById('btnDemarrer').style.display = 'none';
+    document.getElementById('btnArreter').style.display  = 'inline-block';
+    afficherMessage('Simulation démarrée !', 'succes');
+}
+
+function arreterSimulation() {
+    clearInterval(intervalSimulation);
+    intervalSimulation = null;
+    document.getElementById('btnDemarrer').style.display = 'inline-block';
+    document.getElementById('btnArreter').style.display  = 'none';
+    afficherMessage('Simulation arrêtée.', 'succes');
+}
