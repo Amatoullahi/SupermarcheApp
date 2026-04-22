@@ -148,6 +148,28 @@ async function fermerCaisse() {
   } catch (e) { afficherMessage('Erreur serveur', 'erreur'); }
 }
 
+// Fermer une caisse avec répartition
+async function fermerCaisseRepartition() {
+    const numero = parseInt(document.getElementById('numeroCaisse').value);
+    if (isNaN(numero)) {
+        afficherMessage('Indique un numéro de caisse !', 'erreur');
+        return;
+    }
+    try {
+        const res  = await fetch(`${API}/caisse/fermer-redistribuer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ numero })
+        });
+        const data = await res.json();
+        if (data.erreur) { afficherMessage(data.erreur, 'erreur'); return; }
+        afficherMessage(`Caisse ${numero} fermée, clients redistribués !`, 'succes');
+        rafraichir();
+    } catch (e) {
+        afficherMessage('Erreur serveur', 'erreur');
+    }
+}
+// Rafraichir l'historique
 async function rafraichirHistorique() {
     const res = await fetch('http://localhost:8080/api/historique');
     const data = await res.json();

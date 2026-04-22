@@ -18,6 +18,7 @@ public:
     void fermerCaisse(int numero);
     void ajouterClient(const std::string& nom, int nbArticles);
     void servirClient(int numeroCaisse);
+    void fermerCaisseAvecRepartition(int numero);
     std::vector<Caisse>& getCaisses();
     std::vector<EntreeHistorique> getHistorique() const;
     int getTotalClientsServis() const;

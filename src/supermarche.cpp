@@ -40,6 +40,41 @@ void Supermarche::fermerCaisse(int numero) {
     throw std::runtime_error("Caisse introuvable !");
 }
 
+void Supermarche::fermerCaisseAvecRepartition(int numero) {
+    // Trouver la caisse à fermer
+    Caisse* cibleFermeture = nullptr;
+    for (auto& c : caisses) {
+        if (c.getNumero() == numero) {
+            cibleFermeture = &c;
+            break;
+        }
+    }
+    if (!cibleFermeture)
+        throw std::runtime_error("Caisse introuvable !");
+    if (cibleFermeture->isExpress())
+        throw std::runtime_error("La caisse express ne peut pas être fermée.");
+
+    // Redistribuer les clients vers les autres caisses ouvertes
+    while (!cibleFermeture->estVide()) {
+        Client cl = cibleFermeture->servirClient();
+        // Chercher la caisse ouverte la moins chargée (hors celle qu'on ferme)
+        Caisse* meilleure = nullptr;
+        for (auto& c : caisses) {
+            if (c.getNumero() == numero) continue;
+            if (!c.estOuverte()) continue;
+            if (c.isExpress()) continue; // on ne veut pas envoyer de clients à la caisse express
+            if (!meilleure || c.getTailleFile() < meilleure->getTailleFile())
+                meilleure = &c;
+        }
+        if (!meilleure)
+            throw std::runtime_error("Aucune caisse disponible pour la redistribution !");
+        meilleure->ajouterClient(cl);
+    }
+
+    // Maintenant vide → fermeture propre
+    cibleFermeture->fermer();
+}
+
 void Supermarche::ajouterClient(const std::string& nom, int nbArticles) {
     if (nom.empty()) {
         throw std::runtime_error("Le nom du client ne peut pas etre vide !");

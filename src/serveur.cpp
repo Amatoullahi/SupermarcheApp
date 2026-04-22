@@ -67,6 +67,20 @@ void Serveur::demarrer(Supermarche& sm) {
         }
     });
 
+    srv.Post("/api/caisse/fermer-redistribuer", [&sm](const httplib::Request& req, httplib::Response& res) {
+        try {
+            json body = json::parse(req.body);
+            sm.fermerCaisseAvecRepartition(body["numero"]);
+            json j = supermarcheToJson(sm);
+            res.set_content(j.dump(), "application/json");
+            res.set_header("Access-Control-Allow-Origin", "*");
+        } catch (const std::exception& e) {
+            res.status = 400;
+            res.set_content(json{{"erreur", e.what()}}.dump(), "application/json");
+            res.set_header("Access-Control-Allow-Origin", "*");
+        }
+    });
+
     srv.Post("/api/caisse/servir", [&](const httplib::Request& req, httplib::Response& res) {
         try {
             json body = json::parse(req.body);
