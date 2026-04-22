@@ -1,5 +1,34 @@
 const API = 'http://127.0.0.1:8080/api';
+// Initialisation du graphique (une seule fois au chargement)
+const ctx = document.getElementById('monGraphique').getContext('2d');
+const monChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Clients en attente',
+            data: [],
+            backgroundColor: [],
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    }
+});
 
+// Fonction de mise à jour du graphique
+function mettreAJourGraphique(caisses) {
+    monChart.data.labels = caisses.map(c =>
+        'Caisse ' + c.numero + (c.express ? ' ⚡' : '')
+    );
+    monChart.data.datasets[0].data = caisses.map(c => c.nbClients);
+    monChart.data.datasets[0].backgroundColor = caisses.map(c =>
+        c.nbClients > 5 ? '#e74c3c' :
+        c.express       ? '#f5a623' : '#1A3A6B'
+    );
+    monChart.update();
+}
 // Affiche un message temporaire en bas à droite
 function afficherMessage(texte, type) {
   const msg = document.getElementById('message');
@@ -16,6 +45,7 @@ async function rafraichir() {
     const data = await res.json();
     afficherCaisses(data.caisses);
     document.getElementById('totalServis').textContent = data.totalServis;
+    mettreAJourGraphique(data.caisses);
   } catch (e) {
     console.error('Serveur inaccessible', e);
   }
@@ -27,9 +57,10 @@ function afficherCaisses(caisses) {
   grille.innerHTML = '';
   caisses.forEach(c => {
     const carte = document.createElement('div');
-    carte.className = 'carte-caisse'
-      + (c.express ? ' express' : '')
-      + (c.ouverte ? '' : ' fermee');
+    carte.className = 'carte-caisse' +
+      (c.express   ? ' express' : '') +
+      (!c.ouverte  ? ' fermee'  : '') +
+      (c.nbClients > 5 ? ' alerte' : '');
 
     carte.innerHTML = `
       <h3>Caisse ${c.numero}
@@ -117,6 +148,91 @@ async function fermerCaisse() {
   } catch (e) { afficherMessage('Erreur serveur', 'erreur'); }
 }
 
+// Fermer une caisse avec répartition
+async function fermerCaisseRepartition() {
+    const numero = parseInt(document.getElementById('numeroCaisse').value);
+    if (isNaN(numero)) {
+        afficherMessage('Indique un numéro de caisse !', 'erreur');
+        return;
+    }
+    try {
+        const res  = await fetch(`${API}/caisse/fermer-redistribuer`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ numero })
+        });
+        const data = await res.json();
+        if (data.erreur) { afficherMessage(data.erreur, 'erreur'); return; }
+        afficherMessage(`Caisse ${numero} fermée, clients redistribués !`, 'succes');
+        rafraichir();
+    } catch (e) {
+        afficherMessage('Erreur serveur', 'erreur');
+    }
+}
+// Rafraichir l'historique
+async function rafraichirHistorique() {
+    const res = await fetch('http://localhost:8080/api/historique');
+    const data = await res.json();
+    const liste = document.getElementById('liste-historique');
+    liste.innerHTML = '';
+    [...data].reverse().forEach(e => {
+        const li = document.createElement('li');
+        li.textContent = `[${e.heure}] ${e.nom} — ${e.articles} articles → Caisse ${e.caisse}`;
+        liste.appendChild(li);
+    });
+}
+
+setInterval(rafraichirHistorique, 3000);
+rafraichirHistorique();
+
 // Rafraîchissement automatique toutes les 3 secondes
 setInterval(rafraichir, 3000);
 rafraichir();
+
+// ---- Mode simulation ----
+let intervalSimulation = null;
+
+const prenomsAleatoires = [
+    'Awa', 'Fatou', 'Moussa', 'Ibrahima', 'Mariama',
+    'Cheikh', 'Aissatou', 'Oumar', 'Rokhaya', 'Lamine',
+    'Ndéye', 'Mamadou', 'Coumba', 'Serigne', 'Astou'
+];
+
+function nomAleatoire() {
+    return prenomsAleatoires[Math.floor(Math.random() * prenomsAleatoires.length)];
+}
+
+function nbArticlesAleatoire() {
+    return Math.floor(Math.random() * 30) + 1; // entre 1 et 30
+}
+
+async function ajouterClientSimulation() {
+    const nom = nomAleatoire();
+    const nb  = nbArticlesAleatoire();
+    try {
+        await fetch(`${API}/client/ajouter`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nom, nbArticles: nb })
+        });
+        rafraichir();
+    } catch (e) {
+        console.error('Erreur simulation', e);
+    }
+}
+
+function demarrerSimulation() {
+    if (intervalSimulation) return;
+    intervalSimulation = setInterval(ajouterClientSimulation, 2000); // 1 client toutes les 2s
+    document.getElementById('btnDemarrer').style.display = 'none';
+    document.getElementById('btnArreter').style.display  = 'inline-block';
+    afficherMessage('Simulation démarrée !', 'succes');
+}
+
+function arreterSimulation() {
+    clearInterval(intervalSimulation);
+    intervalSimulation = null;
+    document.getElementById('btnDemarrer').style.display = 'inline-block';
+    document.getElementById('btnArreter').style.display  = 'none';
+    afficherMessage('Simulation arrêtée.', 'succes');
+}

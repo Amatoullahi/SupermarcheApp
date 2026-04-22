@@ -22,6 +22,11 @@ void Serveur::demarrer(Supermarche& sm) {
         res.set_content(j.dump(), "application/json");
         cors(res);
     });
+    srv.Get("/api/historique", [&sm](const httplib::Request&, httplib::Response& res) {
+        json j = historiqueToJson(sm.getHistorique());
+        res.set_content(j.dump(), "application/json");
+        res.set_header("Access-Control-Allow-Origin", "*");
+    });
 
     srv.Post("/api/client/ajouter", [&](const httplib::Request& req, httplib::Response& res) {
         try {
@@ -59,6 +64,20 @@ void Serveur::demarrer(Supermarche& sm) {
             res.status = 400;
             res.set_content(json{{"erreur", e.what()}}.dump(), "application/json");
             cors(res);
+        }
+    });
+
+    srv.Post("/api/caisse/fermer-redistribuer", [&sm](const httplib::Request& req, httplib::Response& res) {
+        try {
+            json body = json::parse(req.body);
+            sm.fermerCaisseAvecRepartition(body["numero"]);
+            json j = supermarcheToJson(sm);
+            res.set_content(j.dump(), "application/json");
+            res.set_header("Access-Control-Allow-Origin", "*");
+        } catch (const std::exception& e) {
+            res.status = 400;
+            res.set_content(json{{"erreur", e.what()}}.dump(), "application/json");
+            res.set_header("Access-Control-Allow-Origin", "*");
         }
     });
 

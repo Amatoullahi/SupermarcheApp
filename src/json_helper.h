@@ -26,3 +26,18 @@ inline json supermarcheToJson(Supermarche& sm) {
         {"totalServis",   sm.getTotalClientsServis()  }
     };
 }
+inline json historiqueToJson(const std::vector<EntreeHistorique>& hist) {
+    json arr = json::array();
+    for (const auto& e : hist) {
+        char buf[20];
+        std::strftime(buf, sizeof(buf), "%H:%M:%S",
+                      std::localtime(&e.heureService));
+        arr.push_back({
+            {"nom",      e.nomClient},
+            {"articles", e.nbArticles},
+            {"caisse",   e.numeroCaisse},
+            {"heure",    std::string(buf)}
+        });
+    }
+    return arr;
+}

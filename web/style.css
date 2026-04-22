@@ -72,7 +72,20 @@ button:hover { background: #2a5298; }
   border-radius: 12px;
   margin-left: 6px;
 }
-
+#historique {
+    padding: 12px 24px;
+    background: #fff;
+    margin: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+#historique h2 { margin-bottom: 8px; color: #1A3A6B; }
+#liste-historique { list-style: none; padding: 0; font-size: 0.9rem; }
+#liste-historique li {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+    color: #444;
+}
 #statistiques {
   background: #1A3A6B;
   color: white;
@@ -93,3 +106,65 @@ button:hover { background: #2a5298; }
 
 #message.succes { background: #2ecc71; color: white; }
 #message.erreur { background: #e74c3c; color: white; }
+/* Bonus alerte : file > 5 clients */
+.carte-caisse.alerte {
+    border: 2px solid #e74c3c;
+    background: #fff5f5;
+    animation: clignoter 1s ease-in-out infinite;
+}
+
+@keyframes clignoter {
+    0%,  100% { opacity: 1;   }
+    50%        { opacity: 0.5; }
+}
+#graphique {
+    padding: 12px 24px;
+    background: #fff;
+    margin: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+
+#monGraphique {
+    max-height: 250px;
+}
+#zone-simulation {
+    background: #fff;
+    margin: 16px 24px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#zone-simulation h3 {
+    margin: 0;
+    color: #1A3A6B;
+    font-size: 1rem;
+}
+
+#btnDemarrer {
+    background: #16a085;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#btnArreter {
+    background: #c0392b;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    display: none; /* caché par défaut */
+}
+
+#btnDemarrer:hover { background: #1abc9c; }
+#btnArreter:hover  { background: #e74c3c; }
